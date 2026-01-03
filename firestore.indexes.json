@@ -1,0 +1,23 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "domains",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "isValid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "upvotes",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "lastChecked",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

@@ -1,0 +1,58 @@
+{
+  "name": "dmarc-portal-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "next": "14.0.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "typescript": "^5"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@testing-library/jest-dom": "^6.1.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.5.0",
+    "autoprefixer": "^10.0.1",
+    "babel-jest": "^29.7.0",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.0",
+    "fast-check": "^3.15.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "testPathIgnorePatterns": [
+      "<rootDir>/.next/",
+      "<rootDir>/node_modules/"
+    ],
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { "presets": ["next/babel"] }]
+    },
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx"],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts"
+    ]
+  }
+}
