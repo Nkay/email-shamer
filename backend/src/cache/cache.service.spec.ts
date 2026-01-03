@@ -274,39 +274,49 @@ describe('CacheService', () => {
           data: fc.anything(),
           ttl: fc.integer({ min: 1, max: 60 })
         }), { minLength: 1, maxLength: 10 }),
-        (entries) => {
+        (entriesWithDuplicates) => {
           // Clear cache
           service.clear();
           
+          // Remove duplicate keys to avoid overwriting
+          const uniqueEntries = entriesWithDuplicates.reduce((acc, entry) => {
+            if (!acc.some(e => e.key === entry.key)) {
+              acc.push(entry);
+            }
+            return acc;
+          }, [] as typeof entriesWithDuplicates);
+          
+          // Skip if no unique entries
+          if (uniqueEntries.length === 0) {
+            return;
+          }
+          
           // Set all entries
-          entries.forEach(entry => {
+          uniqueEntries.forEach(entry => {
             service.set(entry.key, entry.data, entry.ttl);
           });
           
           // All entries should be available
-          entries.forEach(entry => {
+          uniqueEntries.forEach(entry => {
             expect(service.get(entry.key)).toEqual(entry.data);
             expect(service.has(entry.key)).toBe(true);
           });
           
-          // Manually expire all entries
-          entries.forEach(entry => {
+          // Manually expire all entries by setting past expiration time
+          uniqueEntries.forEach(entry => {
             const cacheEntry = (service as any).cache.get(entry.key);
             if (cacheEntry) {
               cacheEntry.expiresAt = new Date(Date.now() - 1000);
             }
           });
           
-          // All entries should now be expired
-          entries.forEach(entry => {
+          // All entries should now be expired when accessed
+          uniqueEntries.forEach(entry => {
             expect(service.get(entry.key)).toBeNull();
             expect(service.has(entry.key)).toBe(false);
           });
           
-          // Cleanup should remove all expired entries
-          const cleanedCount = service.cleanup();
-          expect(cleanedCount).toBe(entries.length);
-          
+          // After accessing expired entries, they should be removed from internal cache
           const stats = service.getStats();
           expect(stats.size).toBe(0);
         }

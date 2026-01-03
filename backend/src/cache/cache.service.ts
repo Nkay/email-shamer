@@ -28,25 +28,33 @@ export class CacheService {
   }
 
   /**
-   * Get data from cache if not expired
+   * Get data from cache if not expired, with explicit cache hit/miss information
    */
-  get<T>(key: string): T | null {
+  getWithInfo<T>(key: string): { found: boolean; data: T | null } {
     const entry = this.cache.get(key);
 
     if (!entry) {
       this.logger.debug(`Cache miss for key: ${key}`);
-      return null;
+      return { found: false, data: null };
     }
 
     if (new Date() > entry.expiresAt) {
       // Cache expired
       this.cache.delete(key);
       this.logger.debug(`Cache expired for key: ${key}`);
-      return null;
+      return { found: false, data: null };
     }
 
     this.logger.debug(`Cache hit for key: ${key}`);
-    return entry.data as T;
+    return { found: true, data: entry.data as T };
+  }
+
+  /**
+   * Get data from cache if not expired
+   */
+  get<T>(key: string): T | null {
+    const result = this.getWithInfo<T>(key);
+    return result.data;
   }
 
   /**
@@ -140,9 +148,9 @@ export class CacheService {
     computeFn: () => Promise<T>,
     ttlMinutes?: number,
   ): Promise<T> {
-    const cached = this.get<T>(key);
-    if (cached !== null) {
-      return cached;
+    const result = this.getWithInfo<T>(key);
+    if (result.found) {
+      return result.data as T;
     }
 
     const computed = await computeFn();
