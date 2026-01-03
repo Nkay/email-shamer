@@ -34,31 +34,31 @@ This implementation plan breaks down the DMARC Portal system into discrete, mana
     - **Property 7: DMARC evaluation thoroughness**
     - **Validates: Requirements 6.4**
 
-- [ ] 3. Implement data persistence layer
-  - [ ] 3.1 Create Firebase service and domain data models
+- [x] 3. Implement data persistence layer
+  - [x] 3.1 Create Firebase service and domain data models
     - Set up Firebase Admin SDK integration with NestJS
     - Define DomainDocument interface and Firestore collections
     - Implement basic CRUD operations for domain data
     - _Requirements: 7.5, 8.1_
 
-  - [ ] 3.2 Implement domain registry service
+  - [x] 3.2 Implement domain registry service
     - Create DomainRegistry service with caching logic
     - Add methods for storing and retrieving validation results
     - Implement upvote counting and domain listing functionality
     - _Requirements: 6.1, 6.2, 6.5, 8.2_
 
-  - [ ] 3.3 Write property test for data persistence
+  - [x] 3.3 Write property test for data persistence
     - **Property 8: Data persistence completeness**
     - **Validates: Requirements 6.5, 8.1, 8.2**
 
-- [ ] 4. Implement caching and performance optimization
-  - [ ] 4.1 Create in-memory cache service
+- [x] 4. Implement caching and performance optimization
+  - [x] 4.1 Create in-memory cache service
     - Implement cache with TTL (time-to-live) expiration
     - Add cache-first lookup strategy for domain validation
     - Configure cache expiration periods
     - _Requirements: 6.1, 6.2, 8.3_
 
-  - [ ] 4.2 Write property test for cache behavior
+  - [x] 4.2 Write property test for cache behavior
     - **Property 6: Cache-first lookup strategy**
     - **Property 9: Cache expiration consistency**
     - **Validates: Requirements 6.1, 6.2, 6.3, 8.3**
