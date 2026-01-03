@@ -13,24 +13,24 @@ This implementation plan breaks down the DMARC Portal system into discrete, mana
   - Set up testing frameworks (Jest, fast-check)
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [-] 2. Implement core DMARC validation logic
-  - [ ] 2.1 Create DNS lookup service with domain format validation
+- [x] 2. Implement core DMARC validation logic
+  - [x] 2.1 Create DNS lookup service with domain format validation
     - Implement DnsService interface with Node.js dns module
     - Add domain format validation using regex patterns
     - Handle DNS lookup errors and timeouts
     - _Requirements: 1.1, 6.3_
 
-  - [ ] 2.2 Write property test for DNS lookup service
+  - [x] 2.2 Write property test for DNS lookup service
     - **Property 1: Domain validation completeness**
     - **Validates: Requirements 1.1**
 
-  - [ ] 2.3 Create DMARC record parser and validator
+  - [x] 2.3 Create DMARC record parser and validator
     - Implement DmarcValidator interface for parsing DMARC TXT records
     - Add validation logic for DMARC policy syntax and security best practices
     - Generate detailed validation issues and recommendations
     - _Requirements: 1.2, 1.4, 6.4_
 
-  - [ ] 2.4 Write property test for DMARC validation
+  - [x] 2.4 Write property test for DMARC validation
     - **Property 7: DMARC evaluation thoroughness**
     - **Validates: Requirements 6.4**
 
