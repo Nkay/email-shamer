@@ -103,3 +103,4 @@ firestore-debug.log
 # Service account keys
 *-service-account-key.json
 service-account-*.json
+mail-shamer-firebase-secrets.json

@@ -1,5 +1,7 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import * as admin from 'firebase-admin';
+import * as fs from 'fs';
+import * as path from 'path';
 import { DomainDocument, ValidationResult } from './models/domain.model';
 
 @Injectable()
@@ -14,19 +16,57 @@ export class FirebaseService implements OnModuleInit {
       const projectId = process.env.FIREBASE_PROJECT_ID;
 
       if (serviceAccountPath && projectId) {
+        // Use environment variable path
+        if (!fs.existsSync(serviceAccountPath)) {
+          throw new Error(`Firebase service account file not found at: ${serviceAccountPath}`);
+        }
         admin.initializeApp({
           credential: admin.credential.cert(serviceAccountPath),
           projectId: projectId,
         });
+        this.logger.log(`Firebase initialized with service account from: ${serviceAccountPath}`);
       } else {
-        // For development/testing, use default credentials or emulator
-        admin.initializeApp({
-          projectId: projectId || 'dmarc-portal-dev',
-        });
+        // Use the service account credentials file
+        const credentialsPath = path.resolve(__dirname, '../../../../mail-shamer-firebase-secrets.json');
+        
+        if (!fs.existsSync(credentialsPath)) {
+          throw new Error(
+            `Firebase credentials file not found at: ${credentialsPath}\n` +
+            'Please ensure mail-shamer-firebase-secrets.json exists in the project root, or set FIREBASE_SERVICE_ACCOUNT_PATH environment variable.'
+          );
+        }
+
+        try {
+          const serviceAccount = require(credentialsPath);
+          
+          // Validate required fields
+          const requiredFields = ['project_id', 'private_key', 'client_email'];
+          for (const field of requiredFields) {
+            if (!serviceAccount[field]) {
+              throw new Error(`Missing required field '${field}' in Firebase credentials file`);
+            }
+          }
+
+          admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+            projectId: serviceAccount.project_id,
+          });
+          
+          this.logger.log(`Firebase initialized with service account credentials for project: ${serviceAccount.project_id}`);
+        } catch (error) {
+          if (error.code === 'MODULE_NOT_FOUND') {
+            throw new Error(
+              `Could not load Firebase credentials file: ${credentialsPath}\n` +
+              'Please ensure the file exists and contains valid JSON.'
+            );
+          }
+          throw new Error(`Failed to initialize Firebase: ${error.message}`);
+        }
       }
     }
 
     this.firestore = admin.firestore();
+    this.logger.log('Firebase Firestore initialized successfully');
   }
 
   getFirestore(): admin.firestore.Firestore {
