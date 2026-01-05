@@ -122,20 +122,20 @@ This implementation plan breaks down the DMARC Portal system into discrete, mana
     - **Property 11: Issue explanation completeness**
     - **Validates: Requirements 1.3**
 
-- [ ] 9. Implement domain registry and voting interface
-  - [ ] 9.1 Create domain registry list component
+- [x] 9. Implement domain registry and voting interface
+  - [x] 9.1 Create domain registry list component
     - Display list of non-compliant domains with required information
     - Show domain name, check date, DMARC status, and vote counts
     - Implement sorting by votes and check date
     - _Requirements: 3.1, 3.2_
 
-  - [ ] 9.2 Add voting and interaction features
+  - [x] 9.2 Add voting and interaction features
     - Implement upvote buttons for each domain entry
     - Add recheck buttons to trigger domain re-validation
     - Handle click events for detailed domain information display
     - _Requirements: 3.3, 3.4, 4.1_
 
-  - [ ] 9.3 Write property test for registry display
+  - [x] 9.3 Write property test for registry display
     - **Property 2: Non-compliant domain display accuracy**
     - **Property 3: Domain entry information completeness**
     - **Validates: Requirements 3.1, 3.2, 3.4, 4.1, 4.3**

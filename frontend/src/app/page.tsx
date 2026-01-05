@@ -3,10 +3,14 @@
 import { useState } from 'react';
 import { DomainSubmissionForm, ValidationResult } from '../components/DomainSubmissionForm';
 import { ValidationResultDisplay } from '../components/ValidationResultDisplay';
+import { DomainRegistry, DomainEntry } from '../components/DomainRegistry';
+import { DomainDetails } from '../components/DomainDetails';
 
 export default function Home() {
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedDomain, setSelectedDomain] = useState<DomainEntry | null>(null);
+  const [activeTab, setActiveTab] = useState<'check' | 'registry'>('check');
 
   const handleDomainSubmit = async (domain: string): Promise<ValidationResult> => {
     setIsLoading(true);
@@ -50,6 +54,90 @@ export default function Home() {
     }
   };
 
+  const handleDomainClick = (domain: string) => {
+    // For now, we'll need to fetch the domain details
+    // In a real implementation, this would come from the registry API
+    const mockDomainEntry: DomainEntry = {
+      domain,
+      lastChecked: new Date(),
+      upvotes: 0,
+      dmarcStatus: 'missing',
+      validationResult: {
+        domain,
+        dmarcRecord: null,
+        isValid: false,
+        issues: [
+          {
+            type: 'missing_record',
+            severity: 'error',
+            message: 'No DMARC record found for this domain',
+            recommendation: 'Add a DMARC record to your DNS settings to enable email authentication'
+          }
+        ],
+        checkTimestamp: new Date(),
+      }
+    };
+    setSelectedDomain(mockDomainEntry);
+  };
+
+  const handleUpvote = async (domain: string) => {
+    try {
+      const response = await fetch(`/api/domains/${domain}/upvote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to upvote domain: ${response.statusText}`);
+      }
+
+      // The response should contain the updated vote count
+      const result = await response.json();
+      console.log(`Upvoted ${domain}, new vote count: ${result.upvotes}`);
+    } catch (error) {
+      console.error('Error upvoting domain:', error);
+      // For development, we'll just log the action
+      console.log(`Mock upvote for ${domain}`);
+    }
+  };
+
+  const handleRecheck = async (domain: string): Promise<ValidationResult> => {
+    try {
+      const response = await fetch(`/api/domains/${domain}/recheck`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to recheck domain: ${response.statusText}`);
+      }
+
+      const result: ValidationResult = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error rechecking domain:', error);
+      // For development, return a mock result
+      return {
+        domain,
+        dmarcRecord: null,
+        isValid: false,
+        issues: [
+          {
+            type: 'missing_record',
+            severity: 'error',
+            message: 'No DMARC record found for this domain',
+            recommendation: 'Add a DMARC record to your DNS settings to enable email authentication'
+          }
+        ],
+        checkTimestamp: new Date(),
+      };
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center">
@@ -63,15 +151,62 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="mt-12">
-        <DomainSubmissionForm 
-          onSubmit={handleDomainSubmit}
-          isLoading={isLoading}
-        />
+      {/* Navigation Tabs */}
+      <div className="mt-12 border-b border-gray-200">
+        <nav className="-mb-px flex space-x-8 justify-center">
+          <button
+            onClick={() => setActiveTab('check')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'check'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Check Domain
+          </button>
+          <button
+            onClick={() => setActiveTab('registry')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'registry'
+                ? 'border-primary-500 text-primary-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Domain Registry
+          </button>
+        </nav>
       </div>
 
-      {validationResult && (
-        <ValidationResultDisplay result={validationResult} />
+      {/* Tab Content */}
+      <div className="mt-8">
+        {activeTab === 'check' ? (
+          <>
+            <DomainSubmissionForm 
+              onSubmit={handleDomainSubmit}
+              isLoading={isLoading}
+            />
+
+            {validationResult && (
+              <ValidationResultDisplay result={validationResult} />
+            )}
+          </>
+        ) : (
+          <DomainRegistry
+            onDomainClick={handleDomainClick}
+            onUpvote={handleUpvote}
+            onRecheck={handleRecheck}
+          />
+        )}
+      </div>
+
+      {/* Domain Details Modal */}
+      {selectedDomain && (
+        <DomainDetails
+          domainEntry={selectedDomain}
+          onClose={() => setSelectedDomain(null)}
+          onUpvote={handleUpvote}
+          onRecheck={handleRecheck}
+        />
       )}
 
       <div className="mt-16">
