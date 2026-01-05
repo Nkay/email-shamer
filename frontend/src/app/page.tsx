@@ -1,4 +1,55 @@
+'use client';
+
+import { useState } from 'react';
+import { DomainSubmissionForm, ValidationResult } from '../components/DomainSubmissionForm';
+import { ValidationResultDisplay } from '../components/ValidationResultDisplay';
+
 export default function Home() {
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleDomainSubmit = async (domain: string): Promise<ValidationResult> => {
+    setIsLoading(true);
+    try {
+      // TODO: Replace with actual API call to backend
+      const response = await fetch(`/api/domains/validate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ domain }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to validate domain: ${response.statusText}`);
+      }
+
+      const result: ValidationResult = await response.json();
+      setValidationResult(result);
+      return result;
+    } catch (error) {
+      // For now, return a mock result for demonstration
+      const mockResult: ValidationResult = {
+        domain,
+        dmarcRecord: null,
+        isValid: false,
+        issues: [
+          {
+            type: 'missing_record',
+            severity: 'error',
+            message: 'No DMARC record found for this domain',
+            recommendation: 'Add a DMARC record to your DNS settings to enable email authentication'
+          }
+        ],
+        checkTimestamp: new Date(),
+      };
+      setValidationResult(mockResult);
+      return mockResult;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center">
@@ -12,30 +63,16 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="mt-12 max-w-lg mx-auto">
-        <div className="card">
-          <form className="space-y-4">
-            <div>
-              <label htmlFor="domain" className="block text-sm font-medium text-gray-700">
-                Domain Name
-              </label>
-              <input
-                type="text"
-                id="domain"
-                name="domain"
-                placeholder="example.com"
-                className="input-field mt-1"
-              />
-            </div>
-            <button
-              type="submit"
-              className="btn-primary w-full"
-            >
-              Check DMARC Configuration
-            </button>
-          </form>
-        </div>
+      <div className="mt-12">
+        <DomainSubmissionForm 
+          onSubmit={handleDomainSubmit}
+          isLoading={isLoading}
+        />
       </div>
+
+      {validationResult && (
+        <ValidationResultDisplay result={validationResult} />
+      )}
 
       <div className="mt-16">
         <div className="text-center">
