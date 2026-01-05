@@ -63,25 +63,25 @@ This implementation plan breaks down the DMARC Portal system into discrete, mana
     - **Property 9: Cache expiration consistency**
     - **Validates: Requirements 6.1, 6.2, 6.3, 8.3**
 
-- [ ] 5. Implement voting system with IP restrictions
-  - [ ] 5.1 Create IP blocking service
+- [x] 5. Implement voting system with IP restrictions
+  - [x] 5.1 Create IP blocking service
     - Implement IpBlocker service using in-memory Set for vote tracking
     - Add methods for checking and recording votes per IP/domain combination
     - Ensure constant-time lookup performance
     - _Requirements: 5.1, 5.2, 5.3_
 
-  - [ ] 5.2 Integrate voting with domain registry
+  - [x] 5.2 Integrate voting with domain registry
     - Add upvote endpoints to NestJS controllers
     - Implement vote validation and duplicate prevention
     - Update domain sorting by vote count and check date
     - _Requirements: 4.2, 4.4, 4.5_
 
-  - [ ] 5.3 Write property test for voting system
+  - [x] 5.3 Write property test for voting system
     - **Property 4: Vote management integrity**
     - **Property 5: Registry sorting consistency**
     - **Validates: Requirements 4.2, 4.4, 4.5, 5.1, 5.2**
 
-- [ ] 6. Create backend API endpoints
+- [-] 6. Create backend API endpoints
   - [ ] 6.1 Implement domain validation endpoints
     - Create POST /api/domains/validate endpoint for domain checking
     - Add GET /api/domains/registry endpoint for listing non-compliant domains

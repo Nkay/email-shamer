@@ -1,7 +1,7 @@
 import { Timestamp } from 'firebase-admin/firestore';
 
 export interface ValidationIssue {
-  type: 'missing_record' | 'syntax_error' | 'weak_policy' | 'alignment_issue';
+  type: 'missing_record' | 'syntax_error' | 'weak_policy' | 'alignment_issue' | 'configuration_issue';
   severity: 'error' | 'warning' | 'info';
   message: string;
   recommendation: string;
