@@ -81,20 +81,20 @@ This implementation plan breaks down the DMARC Portal system into discrete, mana
     - **Property 5: Registry sorting consistency**
     - **Validates: Requirements 4.2, 4.4, 4.5, 5.1, 5.2**
 
-- [-] 6. Create backend API endpoints
-  - [ ] 6.1 Implement domain validation endpoints
+- [x] 6. Create backend API endpoints
+  - [x] 6.1 Implement domain validation endpoints
     - Create POST /api/domains/validate endpoint for domain checking
     - Add GET /api/domains/registry endpoint for listing non-compliant domains
     - Implement POST /api/domains/{domain}/recheck for re-validation
     - _Requirements: 1.1, 3.1, 3.5_
 
-  - [ ] 6.2 Implement voting and interaction endpoints
+  - [x] 6.2 Implement voting and interaction endpoints
     - Create POST /api/domains/{domain}/upvote endpoint
     - Add GET /api/domains/{domain}/details endpoint for detailed results
     - Ensure all endpoints are publicly accessible (no authentication)
     - _Requirements: 1.5, 3.3, 4.2_
 
-  - [ ] 6.3 Write integration tests for API endpoints
+  - [x] 6.3 Write integration tests for API endpoints
     - Test complete domain validation workflow
     - Test voting and registry management
     - _Requirements: 1.1, 3.1, 4.2_
